@@ -7,6 +7,8 @@ HENKAKUのコミュニティーの皆さんと Croquet Microverse 用の「behav
 
 試したい方は、このリポジトリをローカルコンピューターにクローンしてください。
 
+新しくできたhenkaku-microverseディレクトリに`cd`で移動し、そこで
+
    npm install
 
 と
