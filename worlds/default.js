@@ -4,18 +4,18 @@
 
 export function init(Constants) {
     Constants.AvatarNames = [
-        "newwhite", "madhatter", "marchhare", "queenofhearts", "cheshirecat", "alice"
+        "newwhite"
     ];
 
     Constants.UserBehaviorDirectory = "behaviors/default";
     Constants.UserBehaviorModules = [
-        "lights.js", "flip.js", "throb.js", "earth.js", "spin.js"
+        "lights.js", "flip.js", "throb.js", "earth.js", "spin.js", "sound.js"
     ];
 
     Constants.DefaultCards = [
         {
             card: {
-                name:"world model",
+                name: "world model",
                 dataScale: [9, 9, 9],
                 dataTranslation: [108, -17.5, -128],
                 dataRotation: [0, Math.PI / 12 * 5, 0],
@@ -47,7 +47,7 @@ export function init(Constants) {
         },
         {
             card: {
-                name:"heart",
+                name: "heart",
                 translation: [-1.2, -0.8, -10],
                 dataScale: [0.36, 0.36, 0.36],                
                 dataLocation: "3VhGaiwqCXp9onQlhdpqfE3xlVGf-FrzHywntXhDSayAPiIiJiVseXkwPzozJXgjJXg1JDknIzMieD85eSN5LAMiIQYZLBAjGQVnHT8xGww_Y2VvLhASEW5mZHk_OXg1JDknIzMieDs_NSQ5IDMkJTN4Ojk1NzoyMyAyMzA3IzoieTM7GRMCMWEbZj4kJRNmZSYCHw83PSMgPmYmMWAJFzQEOR8dBWIjPhliLj15MjciN3k9bmMdY3sZEBcSJwMEDgMBIjISEmcOODcEZQJ7LAM4by8-MDV7YjgBGxQ1",
@@ -59,7 +59,7 @@ export function init(Constants) {
         },
         {
             card: {
-                name:"earth",
+                name: "earth",
                 translation: [7.7, 0.4, -10],
                 scale: [0.3, 0.3, 0.3],
                 type: "object",
@@ -70,8 +70,8 @@ export function init(Constants) {
         },
         {
             card: {
-                name:"image", 
-                translation: [12, 0.2, -1],                
+                name: "image", 
+                translation: [12, 0.2, -1],
                 scale: [3, 3, 3],
                 rotation: [0, 1.5, 0],
                 layers: ["pointer"],
@@ -83,6 +83,24 @@ export function init(Constants) {
                 textureType: "image",
                 type: "2d",
                 behaviorModules: ["Flip"],
+            }
+        },
+        {
+            card: {
+                name: "sound", 
+                translation: [9.723372367306075, -0.09185165312189325, -3.936244636352034],
+                rotation: [0, -0.3057008931973436, 0, 0.952127598538319],
+                fullBright: true,
+                type: "2d",
+                width: 1,
+                height: 1,
+                soundLocation: "./assets/sound/doremi.mp3",
+                behaviorModules: ["SoundPlayer"],
+                layers: ["pointer"],
+                dataLocation: "./assets/SVG/8thNote.svg",
+                modelType: "svg",
+                color: 0xffffff,
+                // loop: true,
             }
         },
     ];
