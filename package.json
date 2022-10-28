@@ -1,6 +1,6 @@
 {
   "name": "henkaku-microverse-oct-2022",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A World in Croquet Microverse",
   "scripts": {
     "start": "npm-run-all --parallel file-server watch-server",
@@ -8,10 +8,10 @@
     "watch-server": "watch-server"
   },
   "dependencies": {
-    "@croquet/microverse-library": "^0.2.0"
+    "@croquet/microverse-library": "^0.2.1"
   },
   "devDependencies": {
-    "@croquet/microverse-file-server": "^1.0.4",
+    "@croquet/microverse-file-server": "^1.0.5",
     "@croquet/microverse-watch-server": "^1.0.6",
     "npm-run-all": "^4.1.5"
   }
