@@ -39,6 +39,19 @@ class DrawingCanvasActor {
             this._cardData.strokeLists = new Map();
         }
         console.log("DrawingCanvasActor.setup");
+		
+		this.clearButton = this.createCard({
+            name:"clearButton",
+            type: "object",
+            layers: ["pointer"],
+            translation: [0, 1, 0],
+            behaviorModules: ["Button"],
+            color: 0xcccccc,
+            shadow: true,
+            parent: this,
+			publishTo: this.id,
+			publishMsg: "clear"
+        });
     }
 
     setData(data) {
@@ -118,8 +131,10 @@ class DrawingCanvasActor {
     }
 
     clear(_viewId) {
-        this._get("global").length = 0;
-        this._get("strokeLists").clear();
+        // this._get("global").length = 0;
+        // this._get("strokeLists").clear();
+		this._cardData.globalDrawing = [];
+		this._cardData.strokeLists = new Map();
         this.say("drawAll");
     }
 }
@@ -164,6 +179,7 @@ class DrawingCanvasPawn {
     }
 
     clear() {
+		console.log("CLEAR")
         let canvas = this.canvas;
         let ctx = canvas.getContext('2d');
         ctx.fillStyle = "white";
@@ -324,14 +340,49 @@ class DrawingCanvasPawn {
     }
 }
 
+/* globals Microverse */
+
+class ButtonActor {
+    setup() {
+                this.addEventListener("pointerDown", "doit");
+    }
+
+    doit() {
+		this.publish(this._cardData.publishTo, this._cardData.publishMsg)
+		//console.log("doit");
+    }
+
+    teardown() {
+    }
+}
+
+class ButtonPawn {
+    setup() {
+        [...this.shape.children].forEach((c) => this.shape.remove(c));
+
+        if (this.shape.children.length === 0) {
+            let s = 0.2;
+            let geometry = new Microverse.THREE.BoxGeometry(s, s, s);
+            let material = new Microverse.THREE.MeshStandardMaterial({color: this.actor._cardData.color || 0xff0000});
+            this.obj = new Microverse.THREE.Mesh(geometry, material);
+            this.obj.castShadow = this.actor._cardData.shadow;
+            this.obj.receiveShadow = this.actor._cardData.shadow;
+            this.shape.add(this.obj);
+        }
+    }
+}
+
 export default {
     modules: [
         {
             name: "DrawingCanvas",
             actorBehaviors: [DrawingCanvasActor],
             pawnBehaviors: [DrawingCanvasPawn],
+        },
+        {
+            name: "Button",
+            actorBehaviors: [ButtonActor],
+            pawnBehaviors: [ButtonPawn],
         }
     ]
 };
-
-/* globals Microverse */
