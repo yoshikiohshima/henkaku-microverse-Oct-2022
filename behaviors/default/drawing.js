@@ -52,7 +52,8 @@ class DrawingCanvasActor {
             shadow: true,
             parent: this,
 	    publishTo: this.id,
-	    publishMsg: "clear"
+	    publishMsg: "clear",
+            noSave: true
         });
         console.log("DrawingCanvasActor.setup");
     }
