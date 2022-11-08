@@ -38,7 +38,10 @@ class DrawingCanvasActor {
             this._cardData.globalDrawing = [];
             this._cardData.strokeLists = new Map();
         }
-        console.log("DrawingCanvasActor.setup");
+
+        if (this.clearButton) {
+            this.clearButton.destroy();
+        }
         this.clearButton = this.createCard({
             name:"clearButton",
             type: "object",
@@ -51,6 +54,7 @@ class DrawingCanvasActor {
 	    publishTo: this.id,
 	    publishMsg: "clear"
         });
+        console.log("DrawingCanvasActor.setup");
     }
 
     setData(data) {
