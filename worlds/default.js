@@ -110,7 +110,7 @@ export function init(Constants) {
             card: {
                 name: "sound 2",
                 translation: [-5.3676383195648, 0.5212626335581853, -5.309069882418509],
-                rotation: [0, -0.3057008931973436, 0, 0.952127598538319],
+                rotation: [0, 0.2886716203634535, 0, 0.9574281673299246],
                 fullBright: true,
                 type: "2d",
                 width: 1,
