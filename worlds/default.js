@@ -9,7 +9,9 @@ export function init(Constants) {
 
     Constants.UserBehaviorDirectory = "behaviors/default";
     Constants.UserBehaviorModules = [
-        "lights.js", "flip.js", "throb.js", "earth.js", "spin.js", "sound.js"
+        "lights.js", "flip.js", "throb.js", "earth.js", "spin.js",
+        "sound.js",
+        "spatialSound.js"
     ];
 
     Constants.DefaultCards = [
@@ -101,6 +103,25 @@ export function init(Constants) {
                 dataLocation: "./assets/SVG/8thNote.svg",
                 modelType: "svg",
                 color: 0xffffff,
+                // loop: true,
+            }
+        },
+        {
+            card: {
+                name: "sound 2",
+                translation: [-5.3676383195648, 0.5212626335581853, -5.309069882418509],
+                rotation: [0, -0.3057008931973436, 0, 0.952127598538319],
+                fullBright: true,
+                type: "2d",
+                width: 1,
+                height: 1,
+                //soundLocation: "./assets/sound/doremi.mp3",
+                soundLocation: "3aRXOosX4C-yOBW9YZ7wJtjRHf_jlULX159Pxz4YFT9ACRUVERJbTk4HCA0EEk8UEk8CEw4QFAQVTwgOThROGzQVFjEuGycULjJQKggGLDsIVFJYGSclJllRU04IDk8CEw4QFAQVTwwIAhMOFwQTEgRPDQ4CAA0FBBcFBAcAFA0VTjYVVzskJzVYDhsRJywNJSM4NjklK1IkBQ8wFCkkIDECGTNQV0wyCwQULDhOBQAVAE5TNRQZERFVEyMqWTgTTBQGFRk1ESYFKyMTBVhWNDECByI5KjMwCjlQJwIG",
+                behaviorModules: ["SpatialSoundPlayer", "AudioMenu"],
+                layers: ["pointer"],
+                dataLocation: "./assets/SVG/8thNote.svg",
+                modelType: "svg",
+                color: 0xee2222,
                 // loop: true,
             }
         },

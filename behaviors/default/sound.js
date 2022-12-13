@@ -68,7 +68,7 @@ class SoundPawn {
     }
 
     async playSoundRequested() {
-        if (this.audio && this.playing) {return;}
+        if (this.audio && this.audio.isPlaying) {return;}
         if (!this.file) {
             await this.ensureFile();
         }
