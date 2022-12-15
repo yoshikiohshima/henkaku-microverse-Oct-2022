@@ -1,12 +1,46 @@
 class SpatialSoundActor {
     setup() {
         this.listen("tapped", "tapped");
-        this.listen("uploaded", "uploaded");
+        this.listen("ended", "ended");
+        if (this.state === undefined) {
+            this.state = "idle";
+            this.size = null;
+            this.REWIND_TIME = 0.03; // same as default for a video-content card
+            this._cardData.pauseTime = this.REWIND_TIME;
+        }
     }
 
-    tapped() {
-        this.say("playSoundRequested");
-        this._cardData.playStartTime = this.now();
+    tapped(currentTime) {
+        console.log("tapped");
+        if (this.state === "idle") {
+            this._cardData.playStartTime = this.now() / 1000.0 - currentTime;
+            this._cardData.pauseTime = null; // no pause time while playing
+            this.state = "startPlaying";
+            this.say("playSoundRequested");
+            // so what about zero here?
+            this.future(0).updateState("playing");
+        } else if (this.state === "playing") {
+            this.state = "pausePlaying";
+            this._cardData.pauseTime = currentTime;
+            this.say("pauseSoundRequested");
+            this.future(0).updateState("idle");
+        }
+    }
+
+    updateState(newState) {
+        this.state = newState;
+    }
+
+    ended() {
+        // handle the replicated "ended" event sent by each view when its own video
+        // playback ends.
+        // this may be called multiple times
+        if (this.state !== "idle") {
+            this.state = "idle";
+            delete this._cardData.playStartTime;
+            this._cardData.pauseTime = this.REWIND_TIME;
+            this.say("pauseSoundRequested");
+        }
     }
 }
 
@@ -17,7 +51,8 @@ class SpatialSoundPawn {
         this.interval = setInterval(() => this.adjustIfNecessary(), 1000);
 
         this.listen("playSoundRequested", "playSoundRequested");
-        this.subscribe("soundPlayer", "toggleSound", "toggleSound");
+        this.listen("pauseSoundRequested", "pauseSoundRequested");
+        this.subscribe("soundPlayer", "toggleSound", "toggleSound"); // from menu
         this.addEventListener("pointerTap", "tapped");
     }
 
@@ -26,13 +61,27 @@ class SpatialSoundPawn {
             document.removeEventListener("pointerdown", this.handler);
             delete this.handler;
             console.log("starting");
+            this.airPlay();
         }
+    }
 
-        this.ensureAudio();
+    airPlay() {
+        // create empty buffer
+        let listener = this.getAudioListener();
+        let context = listener.context;
+        let buffer = context.createBuffer(1, 1, 22050);
+        let source = context.createBufferSource();
+        source.buffer = buffer;
+
+        // connect to output (your speakers)
+        source.connect(context.destination);
+
+        // play the file
+        source.start();
     }
 
     tapped() {
-        this.say("tapped");
+        this.say("tapped", this.audio ? this.audio.context.currentTime : 0);
     }
 
     ensureAudio() {
@@ -51,13 +100,7 @@ class SpatialSoundPawn {
             this.objectURL = objectURL;
             return this.file;
         }).then(() => {
-            this.listener = new THREE.AudioListener();
-
-            let renderer = this.service("ThreeRenderManager");
-            let camera = renderer.camera;
-            camera.add(this.listener);
-
-            let audio = new THREE.PositionalAudio(this.listener);
+            let audio = new THREE.PositionalAudio(this.getAudioListener());
             let audioLoader = new THREE.AudioLoader();
             return new Promise((resolve, _reject) => {
                 audioLoader.load(this.file, (buffer) => {
@@ -71,7 +114,8 @@ class SpatialSoundPawn {
                     this.audio.setLoop(this.loop);
                     this.audio.setVolume(this.volume);
                     this.adjustIfNecessary();
-                    this.stop();
+                    this.audio.onEnded = () => this.ended();
+                    this.pause();
                     resolve(this.audio);
                 });
             });
@@ -84,16 +128,30 @@ class SpatialSoundPawn {
         if (!this.audio) {
             await this.ensureAudio();
         }
-        let now = this.now();
-        this.audio.offset = (now - this.actor._cardData.playStartTime) / 1000;
+        // let now = this.now();
+        // if (this.actor._cardData.playStartTime) {
+        // this.audio.offset = now / 1000 - this.actor._cardData.playStartTime;
+        // }
+        // this.audio.offset = 0;
         this.play();
+    }
+
+    async pauseSoundRequested() {
+        if (!this.audio) {return;}
+        if (!this.audio.isPlaying) {return;}
+        let actorState = this.actor.state;
+        if (!(actorState === "idle" || actorState === "pausePlaying")) {return;}
+        // if (this.actor._cardData.pauseTime) {
+        // this.audio.offset = this.actor._cardData.pauseTime;
+        // }
+        this.pause();
     }
 
     adjustIfNecessary() {}
 
     toggleSound() {
-        if (this.playing) {
-            this.stop();
+        if (this.audio.isPlaying) {
+            this.pause();
         } else {
             this.play();
         }
@@ -101,27 +159,28 @@ class SpatialSoundPawn {
 
     ended() {
         if (this.audio) {
+            this.audio.isPlaying = false;
+            this.audio.offset = 0;
             console.log("ended");
-            this.playing = false;
+            this.say("ended");
         }
     }
 
     play() {
         if (this.audio) {
-            this.playing = true;
             this.audio.play();
         }
     }
 
-    stop() {
-        if (this.audio) {
-            this.audio.pause();
-            this.playing = false;
+    pause() {
+        if (this.audio && this.audio.source) {
+            this.audio.offset = 0;
+            this.audio.stop();
         }
     }
 
     teardown() {
-        if(this.audio) this.stop();
+        if(this.audio) this.pause();
         if (this.interval) {
             clearInterval(this.interval);
             this.interval = null;
