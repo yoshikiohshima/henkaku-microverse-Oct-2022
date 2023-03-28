@@ -63,6 +63,9 @@ class SpatialSoundPawn {
             console.log("starting");
             this.airPlay();
         }
+        if (!this.stepping) {
+            this.stepping = setInterval(() => this.step(), 100);
+        }
     }
 
     airPlay() {
@@ -82,6 +85,20 @@ class SpatialSoundPawn {
 
     tapped() {
         this.say("tapped", this.audio ? this.audio.context.currentTime : 0);
+    }
+
+    step() {
+        let avatars = this.actor.service("PlayerManager").players;
+        let near = false;
+        for (let [_key, avatar] of avatars) {
+            if (Microverse.v3_magnitude(Microverse.v3_sub(avatar.translation, this.translation)) < 2) {
+                near = true;
+            }
+        }
+        // console.log(near);
+        if (near) {
+            this.playSoundRequested();
+        }
     }
 
     ensureAudio() {
@@ -184,6 +201,14 @@ class SpatialSoundPawn {
         if (this.interval) {
             clearInterval(this.interval);
             this.interval = null;
+        }
+        if (this.stepping) {
+            clearInterval(this.stepping);
+            this.stepping = null;
+        }
+        if (this.handler) {
+            document.removeEventListener("pointerdown", this.handler);
+            delete this.handler;
         }
     }
 }
